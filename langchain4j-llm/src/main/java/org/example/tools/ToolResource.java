@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 public class ToolResource {
-    private CustomerSupportAgent assistant;
+    private final CustomerSupportAgent assistant;
 
     public ToolResource(CustomerSupportAgent assistant) {
         this.assistant = assistant;

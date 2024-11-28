@@ -34,7 +34,7 @@ import java.util.List;
 
 import static dev.langchain4j.data.document.loader.FileSystemDocumentLoader.loadDocument;
 
-@RestController
+// @RestController
 public class RagCVResource {
 
     private final ChatLanguageModel chatLanguageModel;

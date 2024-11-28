@@ -12,30 +12,30 @@ import java.util.List;
 @Service
 public class ProductService {
 
-    private List<Product> productList = Lists.newArrayList();
+    private final List<Product> productList = Lists.newArrayList();
 
     @PostConstruct
     public void init() {
-        this.productList.add(Product.builder().id(1).name("Pomme").type("Fruits").quantity(322).build());
-        this.productList.add(Product.builder().id(2).name("Tomate").type("Légumes").quantity(449).build());
-        this.productList.add(Product.builder().id(3).name("Aubergine").type("Légumes").quantity(122).build());
-        this.productList.add(Product.builder().id(4).name("Poire").type("Fruits").quantity(113).build());
+        this.productList.add(Product.builder().id(1).name("Apple").type("Fruits").quantity(322).build());
+        this.productList.add(Product.builder().id(2).name("Tomatoe").type("Vegetables").quantity(449).build());
+        this.productList.add(Product.builder().id(3).name("Strawberry").type("Vegetables").quantity(122).build());
+        this.productList.add(Product.builder().id(4).name("Pear").type("Fruits").quantity(113).build());
     }
 
-    @Tool("retourne la liste du stock de produits")
+    @Tool("returns the list of products in stock")
     public List<Product> all() {
         return this.productList;
     }
 
-    @Tool("recherche d'un produit dont l'identifiant est id")
-    public Product getProduct(@P("identifiant du produit") int id) throws BadRequestException {
+    @Tool("search for a product whose identifier is id")
+    public Product getProduct(@P("product identifier") int id) throws BadRequestException {
         return this.productList
                 .stream()
                 .filter(product -> id == product.getId()).findAny()
                 .orElseThrow((() -> new BadRequestException("product id " + id + " not found")));
     }
 
-    @Tool("recherche d'un produit dont le nom est name")
+    @Tool("search for a product with the name")
     public Product getProduct(String name) throws BadRequestException {
         return this.productList
                 .stream()
@@ -45,14 +45,14 @@ public class ProductService {
     }
 
     @Tool("""
-    ajoute un produit avec l'identifiant id, le nom name, le type et la quantité
-    par défaut la quantité est égal à 100
+            adds a product with identifier id, name name, type and quantity
+            by default the quantity is 100
     """)
     public void addProduct(int id, String name, String type, int quantity) {
         this.productList.add(Product.builder().id(id).name(name).type(type).quantity(quantity).build());
     }
 
-    @Tool("mise à jour de la fiche d'un produit à partir d'un id, name, type et quantity")
+    @Tool("update a product file using an id, name, type and quantity")
     public void updateProduct(int id, String name, String type, int quantity) throws BadRequestException {
         Product findProduct = this.productList
                 .stream()
@@ -63,7 +63,7 @@ public class ProductService {
         findProduct.setQuantity(quantity);
     }
 
-    @Tool("supprime un produit dont l'identifiant est id")
+    @Tool("deletes a product whose identifier is id")
     public void deleteProduct(int id) throws BadRequestException {
         Product findProduct = this.productList
                 .stream()

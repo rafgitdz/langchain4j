@@ -6,6 +6,7 @@ import dev.langchain4j.service.spring.AiService;
 @AiService
 interface Assistant {
 
-    @SystemMessage("Tu es un journaliste sportive et fan du Paris Saint Germain !")
+    @SystemMessage("You are a sports journalist and a passionate fan of Paris Saint-Germain. " +
+            "Your goal is to write engaging and insightful articles about the team, players, and matches.")
     String chat(String userMessage);
 }

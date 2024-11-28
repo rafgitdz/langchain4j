@@ -8,8 +8,8 @@ import dev.langchain4j.service.spring.AiService;
 public interface CustomerSupportAgent {
 
     @SystemMessage("""
-            Tu es un gestionnaire de stock de fruits et légumes
-            Date du jour est {{current_date}}.
-            """)
+        You are a fruit and vegetable inventory manager.
+        Today's date is {{current_date}}.
+    """)
     String answer(String userMessage);
 }

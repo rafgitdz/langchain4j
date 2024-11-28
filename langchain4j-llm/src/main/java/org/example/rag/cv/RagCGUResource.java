@@ -1,9 +1,8 @@
-package org.example.rag;
+package org.example.rag.cv;
 
 import dev.langchain4j.data.document.Document;
 import dev.langchain4j.data.document.DocumentParser;
 import dev.langchain4j.data.document.DocumentSplitter;
-import dev.langchain4j.data.document.parser.TextDocumentParser;
 import dev.langchain4j.data.document.parser.apache.tika.ApacheTikaDocumentParser;
 import dev.langchain4j.data.document.splitter.DocumentSplitters;
 import dev.langchain4j.data.embedding.Embedding;
@@ -12,12 +11,12 @@ import dev.langchain4j.memory.ChatMemory;
 import dev.langchain4j.memory.chat.MessageWindowChatMemory;
 import dev.langchain4j.model.chat.ChatLanguageModel;
 import dev.langchain4j.model.embedding.EmbeddingModel;
-import dev.langchain4j.model.embedding.bge.small.en.v15.BgeSmallEnV15QuantizedEmbeddingModel;
 import dev.langchain4j.rag.content.retriever.ContentRetriever;
 import dev.langchain4j.rag.content.retriever.EmbeddingStoreContentRetriever;
 import dev.langchain4j.service.AiServices;
 import dev.langchain4j.store.embedding.EmbeddingStore;
 import dev.langchain4j.store.embedding.inmemory.InMemoryEmbeddingStore;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -30,23 +29,26 @@ import java.util.List;
 
 import static dev.langchain4j.data.document.loader.FileSystemDocumentLoader.loadDocument;
 
-//@RestController
-public class RAGResource {
+@RestController
+public class RagCGUResource {
 
     private final ChatLanguageModel chatLanguageModel;
-    private final RAGAssistant ragAssistant;
+    private final EmbeddingModel embeddingModel;
+    private final RagCGUAssistant ragCGUAssistant;
 
-    public RAGResource(ChatLanguageModel chatLanguageModel) {
+    public RagCGUResource(ChatLanguageModel chatLanguageModel, EmbeddingModel embeddingModel) {
         this.chatLanguageModel = chatLanguageModel;
-        this.ragAssistant = createAssistant();
+        this.embeddingModel = embeddingModel;
+        this.ragCGUAssistant = createAssistant();
     }
 
-    @GetMapping("/rag")
+    @CrossOrigin(origins = "*")
+    @GetMapping("/rag_cgu")
     public String assistant(@RequestParam(value = "message") String message) {
-        return this.ragAssistant.chat(message);
+        return this.ragCGUAssistant.chat(message);
     }
 
-    private RAGAssistant createAssistant() {
+    private RagCGUAssistant createAssistant() {
 
         // Now, let's load a document that we want to use for RAG.
         DocumentParser documentParser = new ApacheTikaDocumentParser();
@@ -60,7 +62,6 @@ public class RAGResource {
         List<TextSegment> segments = splitter.split(document);
 
         // on Vectorise :p
-        EmbeddingModel embeddingModel = new BgeSmallEnV15QuantizedEmbeddingModel();
         List<Embedding> embeddings = embeddingModel.embedAll(segments).content();
 
         // on stocke tout ça dans une base Vectorielle
@@ -75,11 +76,11 @@ public class RAGResource {
                 .minScore(0.5) // we want to retrieve segments at least somewhat similar to user query
                 .build();
 
-        // une Mémoire pour aider notre char LLM de se souvenir de la discu
+        // une Mémoire pour aider notre char LLM de se souvenir de la discussion
         ChatMemory chatMemory = MessageWindowChatMemory.withMaxMessages(10);
 
         // et hop un AIService avec tout ça
-        return AiServices.builder(RAGAssistant.class)
+        return AiServices.builder(RagCGUAssistant.class)
                 .chatLanguageModel(chatLanguageModel)
                 .contentRetriever(contentRetriever)
                 .chatMemory(chatMemory)
@@ -89,7 +90,7 @@ public class RAGResource {
 
     public static Path toPath(String relativePath) {
         try {
-            URL fileUrl = RAGResource.class.getClassLoader().getResource(relativePath);
+            URL fileUrl = RagCGUResource.class.getClassLoader().getResource(relativePath);
             return Paths.get(fileUrl.toURI());
         } catch (URISyntaxException e) {
             throw new RuntimeException(e);

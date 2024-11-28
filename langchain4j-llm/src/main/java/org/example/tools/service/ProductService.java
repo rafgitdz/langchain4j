@@ -22,7 +22,6 @@ public class ProductService {
         this.productList.add(Product.builder().id(4).name("Poire").type("Fruits").quantity(113).build());
     }
 
-
     @Tool("retourne la liste du stock de produits")
     public List<Product> all() {
         return this.productList;

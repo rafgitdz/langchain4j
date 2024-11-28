@@ -8,9 +8,6 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 class AssistantConfiguration {
 
-    /**
-     * This chat memory will be used by an {@link Assistant}
-     */
     @Bean
     ChatMemory chatMemory() {
         return MessageWindowChatMemory.withMaxMessages(10);
